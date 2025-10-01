@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* پس‌زمینه‌ها - تم روشن و نرم */
+    --background: 0 0% 98%;
+    --foreground: 0 0% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 20%;
+
+    /* رنگ اصلی - سبز زیبا */
+    --primary: 122 39% 49%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 122 39% 42%;
+
+    /* رنگ ثانویه - خاکستری روشن */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 20%;
+
+    /* رنگ‌های کمکی */
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 122 39% 49%;
+    --accent-foreground: 0 0% 100%;
+
+    /* خطا و هشدار */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 20%;
+
+    /* حاشیه و ورودی */
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 122 39% 49%;
+
+    --radius: 0.5rem;
+
+    /* گرادیانت‌های زیبا */
+    --gradient-primary: linear-gradient(135deg, hsl(122 39% 49%) 0%, hsl(122 39% 42%) 100%);
+    --gradient-soft: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(0 0% 98%) 100%);
+
+    /* سایه‌های ظریف */
+    --shadow-sm: 0 2px 4px hsl(122 39% 49% / 0.1);
+    --shadow-md: 0 4px 12px hsl(122 39% 49% / 0.15);
+    --shadow-lg: 0 8px 24px hsl(122 39% 49% / 0.2);
+  }
+
+  .dark {
+    --background: 0 0% 10%;
+    --foreground: 0 0% 95%;
+
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 122 39% 49%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 122 39% 42%;
+
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 122 39% 49%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 20%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 122 39% 49%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(122 39% 49%) 0%, hsl(122 39% 42%) 100%);
+    --gradient-soft: linear-gradient(180deg, hsl(0 0% 12%) 0%, hsl(0 0% 10%) 100%);
+
+    --shadow-sm: 0 2px 4px hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 4px 12px hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 8px 24px hsl(0 0% 0% / 0.5);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Tahoma', Arial, sans-serif;
+    direction: rtl;
+  }
+
+  /* اسکرول بار سفارشی */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary-hover;
+  }
+}
