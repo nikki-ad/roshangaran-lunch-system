@@ -96,11 +96,21 @@ const Index = () => {
     try {
       // آپلود فیش
       const fileName = `${name.trim()}_${Date.now()}.${receiptFile.name.split('.').pop()}`;
+      console.log("Uploading file:", fileName, "to bucket: receipts");
+      
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from("receipts")
-        .upload(fileName, receiptFile);
+        .upload(fileName, receiptFile, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        throw new Error(`خطا در آپلود فیش: ${uploadError.message}`);
+      }
+
+      console.log("Upload successful:", uploadData);
 
       // ثبت رزرو نهایی
       const { error: insertError } = await supabase
