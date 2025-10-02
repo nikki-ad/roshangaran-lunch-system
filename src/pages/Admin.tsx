@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, Download, ArrowRight, RefreshCcw } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Loader2, Save, Download, ArrowRight, RefreshCcw, LogOut } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -31,11 +31,17 @@ const Admin = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [isLoadingReservations, setIsLoadingReservations] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const isAuthenticated = sessionStorage.getItem("adminAuth");
+    if (!isAuthenticated) {
+      navigate("/admin-login");
+      return;
+    }
     loadMenu();
     loadReservations();
-  }, []);
+  }, [navigate]);
 
   const loadMenu = async () => {
     try {
@@ -155,6 +161,15 @@ const Admin = () => {
     return supabase.storage.from("receipts").getPublicUrl(receiptPath).data.publicUrl;
   };
 
+  const handleLogout = () => {
+    sessionStorage.removeItem("adminAuth");
+    toast({
+      title: "خروج موفق",
+      description: "از پنل مدیریت خارج شدید",
+    });
+    navigate("/");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -166,12 +181,18 @@ const Admin = () => {
             </h1>
             <p className="text-muted-foreground">مدیریت منو و رزروها</p>
           </div>
-          <Link to="/">
-            <Button variant="outline">
-              <ArrowRight className="ml-2 h-4 w-4" />
-              بازگشت به صفحه اصلی
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleLogout} data-testid="button-logout">
+              <LogOut className="ml-2 h-4 w-4" />
+              خروج
             </Button>
-          </Link>
+            <Link to="/">
+              <Button variant="outline" data-testid="button-back-home">
+                <ArrowRight className="ml-2 h-4 w-4" />
+                بازگشت به صفحه اصلی
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* به‌روزرسانی منو */}
