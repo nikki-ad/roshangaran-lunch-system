@@ -244,14 +244,6 @@ const Index = () => {
               </Button>
             </div>
 
-            {/* لینک ادمین */}
-            <div className="pt-4 border-t text-center">
-              <Link to="/admin">
-                <Button variant="link" className="text-muted-foreground">
-                  پنل مدیریت
-                </Button>
-              </Link>
-            </div>
           </CardContent>
         </Card>
       </div>
