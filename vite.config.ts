@@ -8,6 +8,12 @@ export default defineConfig(({ mode }) => ({
   // Base path for deployment (uncomment and modify for GitHub Pages)
   // base: '/roshangaran-lunch-system/',
   
+  build: {
+    rollupOptions: {
+      external: [],
+    },
+  },
+  
 server: {
   host: "0.0.0.0",
   port: 8080,
