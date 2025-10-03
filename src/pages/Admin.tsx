@@ -187,10 +187,10 @@ const Admin = () => {
         }
       }
 
-      const { error } = await supabase
-        .from("reservations")
-        .delete()
-        .eq("id", reservation.id);
+      // Try RPC which runs with elevated privileges
+      const { error } = await supabase.rpc("delete_reservation", {
+        p_reservation_id: reservation.id,
+      });
 
       if (error) throw error;
 
