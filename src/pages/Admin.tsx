@@ -134,6 +134,28 @@ const Admin = () => {
     }
   };
 
+  const extractObjectNameFromUrl = (maybeUrl: string): string | null => {
+    try {
+      if (!maybeUrl) return null;
+      if (maybeUrl.startsWith("http")) {
+        const url = new URL(maybeUrl);
+        const marker = "/storage/v1/object/public/receipts/";
+        const idx = url.pathname.indexOf(marker);
+        if (idx >= 0) {
+          const objectName = decodeURIComponent(url.pathname.substring(idx + marker.length));
+          return objectName;
+        }
+        return null;
+      }
+      if (maybeUrl.startsWith("receipts/")) {
+        return maybeUrl.substring("receipts/".length);
+      }
+      return maybeUrl;
+    } catch {
+      return null;
+    }
+  };
+
   const handleExportCSV = () => {
     const finalReservations = reservations.filter((r) => r.status === "final");
     
@@ -148,8 +170,9 @@ const Admin = () => {
 
     let csv = "نام,وضعیت,لینک فیش,تاریخ ثبت\n";
     finalReservations.forEach((row) => {
-      const receiptUrl = row.receipt_url 
-        ? `${supabase.storage.from("receipts").getPublicUrl(row.receipt_url).data.publicUrl}`
+      const objectName = row.receipt_url ? extractObjectNameFromUrl(row.receipt_url) : null;
+      const receiptUrl = objectName
+        ? `${supabase.storage.from("receipts").getPublicUrl(objectName).data.publicUrl}`
         : "ندارد";
       const date = new Date(row.created_at).toLocaleDateString("fa-IR");
       csv += `${row.name},${row.status === "final" ? "نهایی" : "موقت"},${receiptUrl},${date}\n`;
@@ -171,7 +194,9 @@ const Admin = () => {
 
   const getReceiptUrl = (receiptPath: string | null) => {
     if (!receiptPath) return null;
-    return supabase.storage.from("receipts").getPublicUrl(receiptPath).data.publicUrl;
+    if (receiptPath.startsWith("http")) return receiptPath;
+    const objectName = extractObjectNameFromUrl(receiptPath) || receiptPath;
+    return supabase.storage.from("receipts").getPublicUrl(objectName).data.publicUrl;
   };
 
   const deleteReservation = async (reservation: Reservation) => {
@@ -179,9 +204,10 @@ const Admin = () => {
       setIsDeleting(true);
       // Remove receipt file if exists
       if (reservation.receipt_url) {
+        const objectName = extractObjectNameFromUrl(reservation.receipt_url);
         const { error: storageError } = await supabase.storage
           .from("receipts")
-          .remove([reservation.receipt_url]);
+          .remove(objectName ? [objectName] : []);
         if (storageError) {
           console.warn("خطا در حذف فایل فیش:", storageError);
         }
