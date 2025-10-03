@@ -188,11 +188,26 @@ const Admin = () => {
       }
 
       // Try RPC which runs with elevated privileges
-      const { error } = await supabase.rpc("delete_reservation", {
+      const { error: rpcError } = await supabase.rpc("delete_reservation", {
         p_reservation_id: reservation.id,
       });
 
-      if (error) throw error;
+      if (rpcError) {
+        console.warn("RPC delete_reservation not available or failed, falling back to direct delete:", rpcError);
+        // Fallback: direct delete (requires RLS delete policy)
+        const { data: directData, error: directError } = await supabase
+          .from("reservations")
+          .delete()
+          .eq("id", reservation.id)
+          .select("id");
+
+        if (directError) throw directError;
+        if (!directData || directData.length === 0) {
+          throw new Error(
+            "حذف انجام نشد. RPC موجود نیست و Policy حذف هم فعال نیست."
+          );
+        }
+      }
 
       setReservations((prev) => prev.filter((r) => r.id !== reservation.id));
       toast({ title: "حذف شد", description: "رزرو با موفقیت حذف شد" });
