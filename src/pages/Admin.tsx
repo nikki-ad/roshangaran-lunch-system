@@ -1,6 +1,17 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -31,6 +42,8 @@ const Admin = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [isLoadingReservations, setIsLoadingReservations] = useState(true);
   const { toast } = useToast();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -161,6 +174,37 @@ const Admin = () => {
     return supabase.storage.from("receipts").getPublicUrl(receiptPath).data.publicUrl;
   };
 
+  const deleteReservation = async (reservation: Reservation) => {
+    try {
+      setIsDeleting(true);
+      // Remove receipt file if exists
+      if (reservation.receipt_url) {
+        const { error: storageError } = await supabase.storage
+          .from("receipts")
+          .remove([reservation.receipt_url]);
+        if (storageError) {
+          console.warn("خطا در حذف فایل فیش:", storageError);
+        }
+      }
+
+      const { error } = await supabase
+        .from("reservations")
+        .delete()
+        .eq("id", reservation.id);
+
+      if (error) throw error;
+
+      setReservations((prev) => prev.filter((r) => r.id !== reservation.id));
+      toast({ title: "حذف شد", description: "رزرو با موفقیت حذف شد" });
+    } catch (error: any) {
+      console.error("خطا در حذف رزرو:", error);
+      toast({ title: "خطا", description: error.message || "حذف رزرو ناموفق بود", variant: "destructive" });
+    } finally {
+      setIsDeleting(false);
+      setDeletingId(null);
+    }
+  };
+
   const handleLogout = () => {
     sessionStorage.removeItem("adminAuth");
     toast({
@@ -282,6 +326,7 @@ const Admin = () => {
                       <TableHead className="text-right">وضعیت</TableHead>
                       <TableHead className="text-right">فیش واریزی</TableHead>
                       <TableHead className="text-right">تاریخ ثبت</TableHead>
+                      <TableHead className="text-right">عملیات</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -324,6 +369,34 @@ const Admin = () => {
                               day: "numeric",
                             }
                           )}
+                        </TableCell>
+                        <TableCell>
+                          <AlertDialog open={deletingId === reservation.id} onOpenChange={(open) => setDeletingId(open ? reservation.id : null)}>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => setDeletingId(reservation.id)}
+                                disabled={isDeleting}
+                              >
+                                حذف
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>حذف رزرو</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  آیا از حذف این رزرو {reservation.status === "final" ? "نهایی" : "موقت"} مطمئن هستید؟ این عملیات غیرقابل بازگشت است.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel disabled={isDeleting}>انصراف</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => deleteReservation(reservation)} disabled={isDeleting}>
+                                  {isDeleting ? "در حال حذف..." : "تایید حذف"}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </TableCell>
                       </TableRow>
                     ))}

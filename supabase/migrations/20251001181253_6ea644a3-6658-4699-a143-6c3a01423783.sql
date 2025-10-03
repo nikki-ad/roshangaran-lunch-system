@@ -34,6 +34,7 @@ CREATE POLICY "Anyone can read menu"
   FOR SELECT
   USING (true);
 
+
 -- فقط ادمین می‌تواند منو را ویرایش کند (بعداً محدود می‌شود)
 CREATE POLICY "Anyone can update menu"
   ON public.menu
