@@ -9,7 +9,7 @@ export function createClient(request: Request) {
 
   const supabase = createServerClient(
     process.env.VITE_SUPABASE_URL!,
-    process.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY;,
+    process.env.VITE_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
         getAll() {
