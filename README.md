@@ -71,3 +71,16 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Setup for new Supabase project (Project ID changed)
+
+1) Create `.env.local` with your new Supabase credentials (see `.env.example`).
+2) Restart the dev server after changing envs.
+3) In Supabase SQL Editor for the NEW project (matching `VITE_SUPABASE_URL`), run the SQL from:
+   - `supabase/migrations/20251003123500_enable_pgcrypto.sql`
+   - `supabase/migrations/20251003123000_bootstrap_all.sql`
+4) Test admin delete in the app. It will call `public.delete_reservation(uuid)` RPC; if missing, re-run the bootstrap SQL in the correct project.
+
+Notes:
+- Files are uploaded to `receipts` bucket. We store only the object name; links are created via `getPublicUrl` for the CURRENT project.
+- If you still see old links, the app is likely running with old envs; restart after updating.
