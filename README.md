@@ -61,8 +61,12 @@ This project is built with:
 - Tailwind CSS
 
 ## How can I deploy this project?
+You can deploy to Cloudflare Pages:
 
-Simply open [Lovable](https://lovable.dev/projects/259fd677-d54e-408a-856e-b7968636483f) and click on Share -> Publish.
+1) Build command: `npm run build`
+2) Output directory: `dist`
+3) Set env vars: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
+4) SPA routing uses `public/_redirects` to serve `/index.html`
 
 ## Can I connect a custom domain to my Lovable project?
 

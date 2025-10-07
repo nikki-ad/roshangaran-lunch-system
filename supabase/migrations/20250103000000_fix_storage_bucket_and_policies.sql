@@ -16,10 +16,11 @@ DROP POLICY IF EXISTS "Anyone can upload receipts" ON storage.objects;
 DROP POLICY IF EXISTS "Anyone can view receipts" ON storage.objects;
 DROP POLICY IF EXISTS "Anyone can delete receipts" ON storage.objects;
 
--- Create storage policies for receipts bucket
-CREATE POLICY "Anyone can upload receipts" 
+-- Create storage policies for receipts bucket (authenticated insert; public read)
+CREATE POLICY "Authenticated can upload receipts" 
 ON storage.objects 
 FOR INSERT 
+TO authenticated
 WITH CHECK (bucket_id = 'receipts');
 
 CREATE POLICY "Anyone can view receipts" 
@@ -27,9 +28,10 @@ ON storage.objects
 FOR SELECT 
 USING (bucket_id = 'receipts');
 
-CREATE POLICY "Anyone can delete receipts" 
+CREATE POLICY "Admins can delete receipts" 
 ON storage.objects 
 FOR DELETE 
+TO authenticated
 USING (bucket_id = 'receipts');
 
 -- Ensure the bucket is accessible
