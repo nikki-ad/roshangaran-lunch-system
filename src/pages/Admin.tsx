@@ -195,8 +195,18 @@ const Admin = () => {
   const getReceiptUrl = (receiptPath: string | null) => {
     if (!receiptPath) return null;
     if (receiptPath.startsWith("http")) return receiptPath;
-    const objectName = extractObjectNameFromUrl(receiptPath) || receiptPath;
-    return supabase.storage.from("receipts").getPublicUrl(objectName).data.publicUrl;
+    try {
+      const objectName = extractObjectNameFromUrl(receiptPath) || receiptPath;
+      const { data, error } = supabase.storage.from("receipts").getPublicUrl(objectName);
+      if (error) {
+        console.error("Error getting public URL:", error);
+        return null;
+      }
+      return data.publicUrl;
+    } catch (error) {
+      console.error("Error in getReceiptUrl:", error);
+      return null;
+    }
   };
 
   const deleteReservation = async (reservation: Reservation) => {

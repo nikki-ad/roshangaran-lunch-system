@@ -70,6 +70,85 @@ export type Database = {
       [_ in never]: never
     }
   }
+  storage: {
+    Tables: {
+      buckets: {
+        Row: {
+          id: string
+          name: string
+          owner: string | null
+          public: boolean
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id: string
+          name: string
+          owner?: string | null
+          public?: boolean
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string
+          owner?: string | null
+          public?: boolean
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      objects: {
+        Row: {
+          id: string
+          bucket_id: string | null
+          name: string | null
+          owner: string | null
+          created_at: string | null
+          updated_at: string | null
+          last_accessed_at: string | null
+          metadata: Json | null
+          path_tokens: string[] | null
+        }
+        Insert: {
+          id?: string
+          bucket_id?: string | null
+          name?: string | null
+          owner?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+          last_accessed_at?: string | null
+          metadata?: Json | null
+          path_tokens?: string[] | null
+        }
+        Update: {
+          id?: string
+          bucket_id?: string | null
+          name?: string | null
+          owner?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+          last_accessed_at?: string | null
+          metadata?: Json | null
+          path_tokens?: string[] | null
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
 }
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
