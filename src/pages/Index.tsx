@@ -117,7 +117,8 @@ const Index = () => {
         .from("receipts")
         .upload(fileName, receiptFile, {
           cacheControl: '3600',
-          upsert: false
+          upsert: false,
+          contentType: receiptFile.type || 'image/jpeg',
         });
 
       if (uploadError) {

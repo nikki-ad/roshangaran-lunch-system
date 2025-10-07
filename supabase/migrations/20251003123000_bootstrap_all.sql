@@ -72,9 +72,9 @@ ON CONFLICT (id) DO UPDATE SET public = EXCLUDED.public;
 DO $$
 BEGIN
   IF NOT EXISTS (
-    SELECT 1 FROM pg_policies WHERE schemaname='storage' AND tablename='objects' AND policyname='Anyone can upload receipts'
+    SELECT 1 FROM pg_policies WHERE schemaname='storage' AND tablename='objects' AND policyname='Authenticated can upload receipts'
   ) THEN
-    CREATE POLICY "Anyone can upload receipts" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'receipts');
+    CREATE POLICY "Authenticated can upload receipts" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'receipts');
   END IF;
 
   IF NOT EXISTS (
@@ -84,9 +84,9 @@ BEGIN
   END IF;
 
   IF NOT EXISTS (
-    SELECT 1 FROM pg_policies WHERE schemaname='storage' AND tablename='objects' AND policyname='Anyone can delete receipts'
+    SELECT 1 FROM pg_policies WHERE schemaname='storage' AND tablename='objects' AND policyname='Admins can delete receipts'
   ) THEN
-    CREATE POLICY "Anyone can delete receipts" ON storage.objects FOR DELETE USING (bucket_id = 'receipts');
+    CREATE POLICY "Admins can delete receipts" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'receipts');
   END IF;
 END $$;
 
