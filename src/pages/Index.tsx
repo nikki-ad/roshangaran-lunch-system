@@ -98,6 +98,21 @@ const Index = () => {
       const fileName = `${name.trim()}_${Date.now()}.${receiptFile.name.split('.').pop()}`;
       console.log("Uploading file:", fileName, "to bucket: receipts");
       
+      // First, check if the bucket exists and is accessible
+      const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
+      if (bucketsError) {
+        console.error("Error listing buckets:", bucketsError);
+        throw new Error(`خطا در دسترسی به storage: ${bucketsError.message}`);
+      }
+      
+      const receiptsBucket = buckets?.find(bucket => bucket.id === 'receipts');
+      if (!receiptsBucket) {
+        console.error("Receipts bucket not found. Available buckets:", buckets);
+        throw new Error("سطل فیش‌ها یافت نشد. لطفاً با مدیر سیستم تماس بگیرید.");
+      }
+      
+      console.log("Receipts bucket found:", receiptsBucket);
+      
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from("receipts")
         .upload(fileName, receiptFile, {
